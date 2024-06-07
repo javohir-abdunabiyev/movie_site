@@ -501,21 +501,36 @@ const movies_name = document.querySelectorAll(".promo__interactive-item")
 const sorted = movies.sort((a,b) => a.Title.localeCompare(b.Title))
 const body = document.querySelector("body")
 
-reload(movies_name)
-function reload(name) {
-    for(let i = 0; i < name.length; i++) {
-        const dlbtn = document.querySelectorAll(".delete")
 
-        let btn = dlbtn[i]
-        let item = name[i]
-        let el = sorted[i].Title
-        item.innerHTML = el
-        name[i].innerHTML = (i + 1) + '. ' + name[i].innerHTML
 
-        item.append(btn)
+const cont = document.querySelector(".promo__interactive-list")
+
+reload(movies, cont)
+
+function reload(arr, place) {
+    place.innerHTML = ""
+    for(let i = 0; i < arr.length; i++) {
+        let items = arr[i]
+        let idx = arr.indexOf(items)
+        let li = document.createElement('li')
+        let del = document.createElement('div')
         
-        btn.onclick = () => {
-            item.remove()
+        li.innerHTML = `${idx + 1}. ${items.Title}`
+
+        li.classList.add('promo__interactive-item')
+        del.classList.add('delete')
+
+        li.append(del)
+        place.append(li)
+
+
+        del.onclick = () => {
+            movies.splice(idx, 1)
+            reload(movies, cont)
+        }
+
+        li.onclick = () => {
+            promo__bg.style.backgroundImage = `url(${items.Poster})`
         }
 
         const modal = document.createElement("dialog")
@@ -551,7 +566,7 @@ function reload(name) {
 
 
 
-        item.ondblclick = () => {
+        li.ondblclick = () => {
             modal.classList.add("dialog_style")
             modal.showModal()
 
@@ -569,3 +584,55 @@ function reload(name) {
     }
 }
 // 4-5-6 задние
+
+
+
+const uls = document.querySelector(".promo__menu-list ul")
+const genres = ['All', ...new Set(movies.map(elem => elem.Genre))]
+
+genreList(genres, uls)
+
+function genreList(arr, place) {
+    place.innerHTML = ""
+    
+    for(let item of arr) {
+        let indx = arr.indexOf(item)
+        let li = document.createElement("li")
+        let a = document.createElement("a")
+
+        a.classList.add("promo__menu-item")
+        a.innerHTML = item
+
+        a.href = "#"
+        
+        li.append(a)
+        place.append(li)
+
+        if(indx === 0) {
+            a.classList.add("promo__menu-item_active")
+        }
+
+        
+
+
+        a.onclick = () => {
+            const selectedGenre = a.innerHTML
+            const moviesFilter = movies.filter(movie => movie.Genre === selectedGenre)
+            reload(moviesFilter, cont)
+
+
+
+            const lis = document.querySelectorAll(".promo__menu-item")
+            lis.forEach(item => {
+                item.classList.remove("promo__menu-item_active")
+            })
+            
+            a.classList.add("promo__menu-item_active")
+        };
+        
+        
+
+
+        
+    }
+}
